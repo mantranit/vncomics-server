@@ -13,4 +13,4 @@ app = falcon.API()
 test_resource = TestResource()
 
 # Add a route to serve the resource
-app.add_route('/test', test_resource)
+app.add_route('/', test_resource)
