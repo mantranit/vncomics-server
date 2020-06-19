@@ -1,0 +1,4 @@
+gunicorn
+scrapy
+falcon
+psycopg2
