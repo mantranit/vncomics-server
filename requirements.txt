@@ -1,4 +1,5 @@
 gunicorn
 scrapy
 falcon
-psycopg2-binary
+pymongo
+dnspython
