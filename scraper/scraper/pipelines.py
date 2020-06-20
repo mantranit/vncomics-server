@@ -17,8 +17,8 @@ class ComicPipeline(object):
         # database = 'vncomics'
         # self.connection = psycopg2.connect(host=hostname, user=username, password=password, dbname=database)
 
-        DATABASE_URL = os.environ['DATABASE_URL']
-        self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
+        # DATABASE_URL = os.environ['DATABASE_URL']
+        self.connection = psycopg2.connect('postgres://pefchungjyxqgi:ee9a6f4ebd93f8b97ac67e4c1a34d910e73b77cc866fe40bab5b5587cc79aedb@ec2-52-87-135-240.compute-1.amazonaws.com:5432/ddu8s5pp7ddfbi', sslmode='require')
         self.cur = self.connection.cursor()
 
     def close_spider(self, spider):
