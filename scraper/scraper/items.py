@@ -12,3 +12,7 @@ class ComicItem(scrapy.Item):
     name = scrapy.Field()
     cover = scrapy.Field()
     url = scrapy.Field()
+
+class DetailItem(scrapy.Item):
+    # define the fields for your item here like:
+    body = scrapy.Field()
