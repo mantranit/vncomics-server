@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 import scrapy
 import pymongo
 import time
@@ -14,7 +18,8 @@ class DetailSpider(scrapy.Spider):
         self.comics = self.db.comics
         self.category = self.db.categories
         self.authors = self.db.authors
-        self.row = self.comics.find_one({"body": {"$exists": False}})
+        self.chapters = self.db.chapters
+        self.row = self.comics.find_one({"chapters": {"$exists": False}})
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)
 
@@ -61,6 +66,21 @@ class DetailSpider(scrapy.Spider):
             
             item_aut.append(aut_id)
 
+        item_cha = []
+        for block in response.css('#ctl00_divCenter #nt_listchapter .row'):
+            cha_name = block.css('.chapter a::text').extract_first()
+            cha_url = block.css('.chapter a::attr(href)').extract_first()
+            if cha_name:
+                cha_id = ''
+                row = self.chapters.find_one({"comicId": self.row['_id'], "name": cha_name})
+                if not row:
+                    row = self.chapters.insert_one({"comicId": self.row['_id'], "name": cha_name, "url": cha_url})
+                    cha_id = row.inserted_id
+                else:
+                    cha_id = row['_id']
+                
+                item_cha.append(cha_id)
+
         self.comics.update_one({
             '_id': self.row['_id']
         },{
@@ -70,6 +90,7 @@ class DetailSpider(scrapy.Spider):
                 'status': item_status,
                 'categories': item_cat,
                 'authors': item_aut,
+                'chapters': item_cha,
                 'createdAt': '',
                 'updatedAt': item_updatedAt,
             }
@@ -77,7 +98,7 @@ class DetailSpider(scrapy.Spider):
 
         # next url
         # time.sleep(0.2)
-        self.row = self.comics.find_one({"body": {"$exists": False}})
+        self.row = self.comics.find_one({"chapters": {"$exists": False}})
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)
         

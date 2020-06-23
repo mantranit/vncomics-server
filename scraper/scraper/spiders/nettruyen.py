@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 import scrapy
 import time
 from scraper.items import ComicItem
@@ -23,10 +27,10 @@ class NettruyenSpider(scrapy.Spider):
             obj = ComicItem(name=item_name,cover=item_cover,url=item_url)
             yield obj
 
-        time.sleep(2)
-        next_url_path = response.css("#ctl00_divCenter .pagination a.next-page::attr('href')").extract_first()
-        if next_url_path:
-            yield scrapy.Request(
-                url=next_url_path,
-                callback=self.parse
-            )
+        # time.sleep(2)
+        # next_url_path = response.css("#ctl00_divCenter .pagination a.next-page::attr('href')").extract_first()
+        # if next_url_path:
+        #     yield scrapy.Request(
+        #         url=next_url_path,
+        #         callback=self.parse
+        #     )
