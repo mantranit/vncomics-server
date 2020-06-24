@@ -3,3 +3,4 @@ scrapy
 falcon
 pymongo
 dnspython
+requests
