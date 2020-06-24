@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 import scrapy
 import pymongo
 import time
 import datetime
+import requests
 from scraper.items import DetailItem
 
 class DetailSpider(scrapy.Spider):
     name = 'detail'
-    
+
     def start_requests(self):
         self.client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
         self.db = self.client.vncomics
@@ -21,10 +18,13 @@ class DetailSpider(scrapy.Spider):
         self.chapters = self.db.chapters
         self.row = self.comics.find_one({"chapters": {"$exists": False}})
         if self.row:
-            yield scrapy.Request(url=self.row['url'], callback=self.parse)
+            resp = requests.head(self.row['url'])
+            if resp.status_code == 404:
+                self.comics.delete_one({"_id": self.row['_id']})
+            else:
+                yield scrapy.Request(url=self.row['url'], callback=self.parse)
 
     def parse(self, response):
-
         item_body = response.css('#item-detail .detail-content p::text').extract_first()
 
         date_time_str = response.css('#item-detail time.small::text').extract_first()
@@ -97,7 +97,7 @@ class DetailSpider(scrapy.Spider):
         }, upsert=False)
 
         # next url
-        # time.sleep(0.2)
+        time.sleep(0.2)
         self.row = self.comics.find_one({"chapters": {"$exists": False}})
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)
