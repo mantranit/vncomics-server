@@ -16,3 +16,7 @@ class ComicItem(scrapy.Item):
 class DetailItem(scrapy.Item):
     # define the fields for your item here like:
     body = scrapy.Field()
+
+class ChapterItem(scrapy.Item):
+    # define the fields for your item here like:
+    pages = scrapy.Field()

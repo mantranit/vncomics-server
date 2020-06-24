@@ -4,3 +4,4 @@ falcon
 pymongo
 dnspython
 requests
+uuid

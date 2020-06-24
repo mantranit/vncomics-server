@@ -97,7 +97,7 @@ class DetailSpider(scrapy.Spider):
         }, upsert=False)
 
         # next url
-        # time.sleep(0.2)
+        time.sleep(0.2)
         self.row = self.comics.find_one({"chapters": {"$exists": False}})
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)
