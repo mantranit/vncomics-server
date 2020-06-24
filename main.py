@@ -1,6 +1,7 @@
 import falcon
 import json
 import pymongo
+from bson.json_util import dumps
 
 class TestResource(object):
     def on_get(self, req, res):
@@ -14,7 +15,7 @@ class TestResource(object):
 
         """Handles all GET requests."""
         res.status = falcon.HTTP_200  # This is the default status
-        res.body = json.dumps(row)
+        res.body = dumps(self.row)
 
 # Create the Falcon application object
 app = falcon.API()
