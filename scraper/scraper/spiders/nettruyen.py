@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 import scrapy
 import time
 from scraper.items import ComicItem
