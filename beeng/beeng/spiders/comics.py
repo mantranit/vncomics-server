@@ -2,6 +2,7 @@
 import scrapy
 import time
 import pymongo
+from urllib.parse import unquote_plus
 
 class ComicsSpider(scrapy.Spider):
     name = 'comics'
@@ -13,9 +14,10 @@ class ComicsSpider(scrapy.Spider):
     def parse(self, response):
 
         for block in response.css('.genre-main .manga-list .item'):
-            item_name = block.css('.row .info .tit a::text').extract_first().encode('utf-8')
+            item_name = block.css('.row .info .tit a::text').extract_first().decode('unicode_escape')
             item_cover = block.css('.row .img img::attr(src)').extract_first()
             item_cover = item_cover.replace("https://beeng.net/cover/80x110/", "")
+            item_cover = unquote_plus(item_cover)
             item_url = 'https://beeng.net' + block.css('.row .img::attr(href)').extract_first()
 
             yield({
@@ -25,10 +27,10 @@ class ComicsSpider(scrapy.Spider):
             })
 
         time.sleep(2)
-        # next_url_path = response.css(".genre-main .pagination li:last-child a::attr('href')").extract_first()
-        # if next_url_path and next_url_path != "#":
-        #     yield scrapy.Request(url=next_url_path, callback=self.parse)
-        # else:
-        #     self.client.close()
+        next_url_path = response.css(".genre-main .pagination li:last-child a::attr('href')").extract_first()
+        if next_url_path and next_url_path != "#":
+            yield scrapy.Request(url=next_url_path, callback=self.parse)
+        else:
+            self.client.close()
         
         pass
