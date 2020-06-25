@@ -5,7 +5,8 @@ import datetime
 import bson.objectid
 
 class TestResource(object):
-    def my_handler(self, x):
+    
+    def my_handler(x):
         if isinstance(x, datetime.datetime):
             return x.isoformat()
         elif isinstance(x, bson.objectid.ObjectId):

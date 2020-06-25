@@ -18,15 +18,13 @@ class ComicsPipeline:
 
     def process_item(self, item, spider):
         comics = self.db.comics
-        row = comics.find({'name': item['name']}).count()
+        row = comics.count_documents({u'name': item['name']})
         if row > 0:
             print("Already exists")
         else:
             comics.insert_one({
-                u'id': item['id'],
                 u'name': item['name'],
                 u'cover': item['cover'],
-                u'url': item['url'],
-                u'updatedAt': datetime.datetime.now()
+                u'url': item['url']
             })
         return item

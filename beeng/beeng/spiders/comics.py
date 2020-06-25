@@ -2,8 +2,6 @@
 import scrapy
 import time
 import pymongo
-import uuid
-from beeng.items import ComicItem
 
 class ComicsSpider(scrapy.Spider):
     name = 'comics'
@@ -13,15 +11,14 @@ class ComicsSpider(scrapy.Spider):
         yield scrapy.Request(url="https://beeng.net/the-loai", callback=self.parse)
 
     def parse(self, response):
+
         for block in response.css('.genre-main .manga-list .item'):
-            item_id = str(uuid.uuid4())
             item_name = block.css('.row .info .tit a::text').extract_first()
             item_cover = block.css('.row .img img::attr(src)').extract_first()
             item_cover = item_cover.replace("https://beeng.net/cover/80x110/", "")
             item_url = 'https://beeng.net' + block.css('.row .img::attr(href)').extract_first()
 
             yield({
-                u'id': item_id,
                 u'name': item_name,
                 u'cover': item_cover,
                 u'url': item_url
@@ -33,4 +30,5 @@ class ComicsSpider(scrapy.Spider):
         #     yield scrapy.Request(url=next_url_path, callback=self.parse)
         # else:
         #     self.client.close()
+        
         pass

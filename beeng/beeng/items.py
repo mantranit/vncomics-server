@@ -10,7 +10,6 @@ import scrapy
 
 class ComicItem(scrapy.Item):
     # define the fields for your item here like:
-    id = scrapy.Field()
     name = scrapy.Field()
     cover = scrapy.Field()
     url = scrapy.Field()
