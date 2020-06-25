@@ -18,7 +18,7 @@ class TestResource(object):
         self.client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
         self.db = self.client.vncomics
         self.comics = self.db.comics
-        self.row = self.comics.find_one()
+        self.row = self.comics.find().limit(10)
 
         """Handles all GET requests."""
         res.status = falcon.HTTP_200  # This is the default status
