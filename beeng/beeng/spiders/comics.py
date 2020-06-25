@@ -13,7 +13,7 @@ class ComicsSpider(scrapy.Spider):
     def parse(self, response):
 
         for block in response.css('.genre-main .manga-list .item'):
-            item_name = block.css('.row .info .tit a::text').extract_first()
+            item_name = block.css('.row .info .tit a::text').extract_first().encode('utf-8')
             item_cover = block.css('.row .img img::attr(src)').extract_first()
             item_cover = item_cover.replace("https://beeng.net/cover/80x110/", "")
             item_url = 'https://beeng.net' + block.css('.row .img::attr(href)').extract_first()

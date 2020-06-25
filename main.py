@@ -25,7 +25,7 @@ class TestResource(object):
 
         """Handles all GET requests."""
         res.status = falcon.HTTP_200  # This is the default status
-        res.body = json.dumps(self.row, default=my_handler)
+        res.body = json.dumps(self.row, default=self.my_handler)
 
 # Create the Falcon application object
 app = falcon.API()
