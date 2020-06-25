@@ -8,7 +8,10 @@
 import scrapy
 
 
-class BeengItem(scrapy.Item):
+class ComicItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
+    id = scrapy.Field()
+    name = scrapy.Field()
+    cover = scrapy.Field()
+    url = scrapy.Field()
     pass

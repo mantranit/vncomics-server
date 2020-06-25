@@ -1,9 +1,18 @@
 import falcon
 import json
 import pymongo
-from bson.json_util import dumps
+import datetime
+import bson.objectid
 
 class TestResource(object):
+    def my_handler(self, x):
+        if isinstance(x, datetime.datetime):
+            return x.isoformat()
+        elif isinstance(x, bson.objectid.ObjectId):
+            return str(x)
+        else:
+            raise TypeError(x)
+
     def on_get(self, req, res):
         self.client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
         self.db = self.client.vncomics
@@ -15,7 +24,7 @@ class TestResource(object):
 
         """Handles all GET requests."""
         res.status = falcon.HTTP_200  # This is the default status
-        res.body = dumps(self.row)
+        res.body = json.dumps(self.row, default=my_handler)
 
 # Create the Falcon application object
 app = falcon.API()
@@ -24,4 +33,4 @@ app = falcon.API()
 test_resource = TestResource()
 
 # Add a route to serve the resource
-app.add_route('/', test_resource)
+app.add_route('/comics', test_resource)
