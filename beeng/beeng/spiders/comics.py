@@ -14,7 +14,7 @@ class ComicsSpider(scrapy.Spider):
     def parse(self, response):
 
         for block in response.css('.genre-main .manga-list .item'):
-            item_name = block.css('.row .info .tit a::text').extract_first().decode('unicode_escape')
+            item_name = block.css('.row .info .tit a::text').extract_first()
             item_cover = block.css('.row .img img::attr(src)').extract_first()
             item_cover = item_cover.replace("https://beeng.net/cover/80x110/", "")
             item_cover = unquote_plus(item_cover)
