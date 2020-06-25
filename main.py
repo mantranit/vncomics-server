@@ -4,15 +4,15 @@ import pymongo
 import datetime
 import bson.objectid
 
+def my_handler(x):
+    if isinstance(x, datetime.datetime):
+        return x.isoformat()
+    elif isinstance(x, bson.objectid.ObjectId):
+        return str(x)
+    else:
+        raise TypeError(x)
+
 class TestResource(object):
-    
-    def my_handler(x):
-        if isinstance(x, datetime.datetime):
-            return x.isoformat()
-        elif isinstance(x, bson.objectid.ObjectId):
-            return str(x)
-        else:
-            raise TypeError(x)
 
     def on_get(self, req, res):
         self.client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
