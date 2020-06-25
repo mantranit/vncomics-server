@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import time
-import pymongo
 from urllib.parse import unquote_plus
 
 class ComicsSpider(scrapy.Spider):
@@ -28,7 +27,7 @@ class ComicsSpider(scrapy.Spider):
 
         time.sleep(2)
         next_url_path = response.css(".genre-main .pagination li:last-child a::attr('href')").extract_first()
-        if next_url_path and next_url_path != "#":
+        if next_url_path:
             yield scrapy.Request(url=next_url_path, callback=self.parse)
         
         pass
