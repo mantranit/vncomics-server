@@ -30,7 +30,5 @@ class ComicsSpider(scrapy.Spider):
         next_url_path = response.css(".genre-main .pagination li:last-child a::attr('href')").extract_first()
         if next_url_path and next_url_path != "#":
             yield scrapy.Request(url=next_url_path, callback=self.parse)
-        else:
-            self.client.close()
         
         pass
