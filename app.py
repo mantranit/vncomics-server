@@ -26,14 +26,16 @@ def after_request_func(data):
 
 @app.route("/", methods=['GET'])
 def home():
-    return "Hello, There!"
+    now = datetime.now()
+    formatted_now = now.strftime("%A, %d %B, %Y at %X")
+    return "Hello, There!" + " It's " + formatted_now
 
 @app.route("/comics", methods=['GET'])
 def comics():
     client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
     db = client.vncomics
     comics = db.comics
-    row = comics.aggregate([
+    rows = comics.aggregate([
         { 
             "$lookup": {
                 "from": "categories", 
@@ -60,7 +62,7 @@ def comics():
         },
         { "$limit": 5 }
     ])
-    return json.dumps({"data": list(row)}, cls=JSONEncoder)
+    return json.dumps({"data": list(rows)}, ensure_ascii=False, cls=JSONEncoder)
 
 @app.route("/hello/<name>", methods=['GET'])
 def hello_there(name):
