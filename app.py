@@ -21,14 +21,14 @@ class JSONEncoder(json.JSONEncoder):
 @app.after_request
 def after_request_func(data):
     response = make_response(data)
-    response.headers['Content-Type'] = 'application/json'
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
     return response
 
-@app.route("/")
+@app.route("/", methods=['GET'])
 def home():
     return "Hello, There!"
 
-@app.route("/comics")
+@app.route("/comics", methods=['GET'])
 def comics():
     client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
     db = client.vncomics
@@ -36,7 +36,7 @@ def comics():
     row = comics.find().limit(10)
     return json.dumps({"data": list(row)}, cls=JSONEncoder)
 
-@app.route("/hello/<name>")
+@app.route("/hello/<name>", methods=['GET'])
 def hello_there(name):
     now = datetime.now()
     formatted_now = now.strftime("%A, %d %B, %Y at %X")
