@@ -1,0 +1,54 @@
+import flask
+from flask import make_response, request, jsonify
+from datetime import datetime
+import re
+import json
+from bson import ObjectId
+import pymongo
+
+app = flask.Flask(__name__)
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()
+        elif isinstance(o, ObjectId):
+            return str(o)
+        else:
+            return json.JSONEncoder.default(self, o)
+
+@app.after_request
+def after_request_func(data):
+    response = make_response(data)
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
+@app.route("/")
+def home():
+    return "Hello, There!"
+
+@app.route("/comics")
+def comics():
+    client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
+    db = client.vncomics
+    comics = db.comics
+    row = comics.find().limit(10)
+    return json.dumps({"data": list(row)}, cls=JSONEncoder)
+
+@app.route("/hello/<name>")
+def hello_there(name):
+    now = datetime.now()
+    formatted_now = now.strftime("%A, %d %B, %Y at %X")
+
+    # Filter the name argument to letters only using regular expressions. URL arguments
+    # can contain arbitrary text, so we restrict to safe characters only.
+    match_object = re.match("[a-zA-Z]+", name)
+
+    if match_object:
+        clean_name = match_object.group(0)
+    else:
+        clean_name = "Friend"
+
+    content = "Hello there, " + clean_name + "! It's " + formatted_now
+    return jsonify({ "data": content})
