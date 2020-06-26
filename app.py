@@ -33,7 +33,33 @@ def comics():
     client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
     db = client.vncomics
     comics = db.comics
-    row = comics.find().limit(10)
+    row = comics.aggregate([
+        { 
+            "$lookup": {
+                "from": "categories", 
+                "localField": "categories", 
+                "foreignField": "_id",
+                "as": "categories"
+            }
+        },
+        { 
+            "$lookup": {
+                "from": "authors", 
+                "localField": "authors", 
+                "foreignField": "_id",
+                "as": "authors"
+            }
+        },
+        { 
+            "$lookup": {
+                "from": "chapters", 
+                "localField": "chapters", 
+                "foreignField": "_id",
+                "as": "chapters"
+            }
+        },
+        { "$limit": 5 }
+    ])
     return json.dumps({"data": list(row)}, cls=JSONEncoder)
 
 @app.route("/hello/<name>", methods=['GET'])
