@@ -27,7 +27,7 @@ class ChaptersSpider(scrapy.Spider):
             }
         }, upsert=False)
 
-        time.sleep(3)
+        time.sleep(2)
         self.row = self.chapters.find_one({"pages": {"$exists": False}})
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)
