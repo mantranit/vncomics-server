@@ -1,24 +1,30 @@
 import flask
-from flask import make_response, request, jsonify
+from flask import make_response, request, abort, jsonify
 from datetime import datetime
-import re
 import json
 from bson import ObjectId
 import pymongo
 
-import middleware
+from app import middleware
+from app.utils.json import Parse
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, instance_relative_config=True)
+app.config.from_pyfile('config.py')
 app.wsgi_app = middleware.Middleware(app.wsgi_app)
 
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime):
-            return o.isoformat()
-        elif isinstance(o, ObjectId):
-            return str(o)
-        else:
-            return json.JSONEncoder.default(self, o)
+@app.errorhandler(403)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 403
+
+@app.errorhandler(404)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 404
+
+@app.before_request
+def before_request_func():
+    apiKey = request.headers.get('x-api-key')
+    if not apiKey or apiKey != app.config['X_API_KEY']:
+        abort(403, description="Missing x-api-key or the x-api-key is NOT match")
 
 @app.after_request
 def after_request_func(data):
@@ -64,21 +70,4 @@ def comics():
         },
         { "$limit": 5 }
     ])
-    return json.dumps({"data": list(rows)}, ensure_ascii=False, cls=JSONEncoder)
-
-@app.route("/hello/<name>", methods=['GET'])
-def hello_there(name):
-    now = datetime.now()
-    formatted_now = now.strftime("%A, %d %B, %Y at %X")
-
-    # Filter the name argument to letters only using regular expressions. URL arguments
-    # can contain arbitrary text, so we restrict to safe characters only.
-    match_object = re.match("[a-zA-Z]+", name)
-
-    if match_object:
-        clean_name = match_object.group(0)
-    else:
-        clean_name = "Friend"
-
-    content = "Hello there, " + clean_name + "! It's " + formatted_now
-    return jsonify({ "data": content})
+    return Parse(list(rows))

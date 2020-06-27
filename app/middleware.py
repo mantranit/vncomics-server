@@ -4,6 +4,6 @@ class Middleware(object):
 
     def __call__(self, environ, start_response):
         print(' — — — — — — — — — — -')
-        print('Function called')
+        print(environ['HTTP_X_API_KEY'])
         print(' — — — — — — — — — — -')
         return self.app(environ, start_response)
