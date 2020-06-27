@@ -58,15 +58,16 @@ class DetailsSpider(scrapy.Spider):
         names = response.css('.manga-info-main .manga-detail li:nth-child(4) span:not(.font-bold)::text').getall()
         item_aut = []
         for i in reversed(range(len(names))):
-            aut_id = ''
-            row = self.authors.find_one({"name": names[i]})
-            if not row:
-                row = self.authors.insert_one({"name": names[i]})
-                aut_id = row.inserted_id
-            else:
-                aut_id = row['_id']
-            
-            item_aut.append(aut_id)
+            if names[i] != "Đang cập nhật":
+                aut_id = ''
+                row = self.authors.find_one({"name": names[i]})
+                if not row:
+                    row = self.authors.insert_one({"name": names[i]})
+                    aut_id = row.inserted_id
+                else:
+                    aut_id = row['_id']
+                
+                item_aut.append(aut_id)
 
         item_createdAt = ''
         item_updatedAt = ''
