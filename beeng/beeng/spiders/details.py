@@ -17,7 +17,7 @@ class DetailsSpider(scrapy.Spider):
         self.category = self.db.categories
         self.authors = self.db.authors
         self.chapters = self.db.chapters
-        self.row = self.comics.find_one({"chapters": {"$exists": False}})
+        self.row = self.comics.find_one({"crawled": {"$exists": False}})
         if self.row:
             resp = requests.head(self.row['url'])
             if resp.status_code == 404:
@@ -72,7 +72,7 @@ class DetailsSpider(scrapy.Spider):
         item_updatedAt = ''
 
         item_cha = []
-        for block in response.css('.manga-info-main .manga-chapter .u84ho3'):
+        for block in reversed(response.css('.manga-info-main .manga-chapter .u84ho3')):
             cha_name = block.css('a::text').extract_first()
             cha_url = 'https://beeng.net' + block.css('a::attr(href)').extract_first()
 
@@ -108,12 +108,13 @@ class DetailsSpider(scrapy.Spider):
                 'chapters': item_cha,
                 'createdAt': item_createdAt,
                 'updatedAt': item_updatedAt,
+                'crawled': True
             }
         }, upsert=False)
 
         # next url
         time.sleep(0.2)
-        self.row = self.comics.find_one({"chapters": {"$exists": False}})
+        self.row = self.comics.find_one({"crawled": {"$exists": False}})
         if self.row:
             resp = requests.head(self.row['url'])
             if resp.status_code == 404:
