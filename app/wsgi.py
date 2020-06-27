@@ -6,8 +6,10 @@ import json
 from bson import ObjectId
 import pymongo
 
-app = flask.Flask(__name__)
+import middleware
 
+app = flask.Flask(__name__)
+app.wsgi_app = middleware.Middleware(app.wsgi_app)
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
