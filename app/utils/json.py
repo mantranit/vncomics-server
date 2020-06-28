@@ -11,5 +11,5 @@ class JSONEncoder(json.JSONEncoder):
         else:
             return json.JSONEncoder.default(self, o)
 
-def Parse(data):
+def JSONParser(data):
     return json.dumps({"data": data}, ensure_ascii=False, cls=JSONEncoder)
