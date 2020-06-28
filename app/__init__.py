@@ -11,11 +11,19 @@ app = flask.Flask(__name__)
 
 @app.errorhandler(403)
 def resource_not_found(e):
-    return jsonify(error=str(e)), 403
+    matchApi = re.match("^/api/.*", request.path)
+    if matchApi:
+        return jsonify(error=str(e)), 403
+    else:
+        return str(e), 403
 
 @app.errorhandler(404)
 def resource_not_found(e):
-    return jsonify(error=str(e)), 404
+    matchApi = re.match("^/api/.*", request.path)
+    if matchApi:
+        return jsonify(error=str(e)), 404
+    else:
+        return str(e), 403
 
 @app.before_request
 def before_request_func():
