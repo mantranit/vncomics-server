@@ -5,13 +5,14 @@ import time
 import datetime
 import requests
 import re
+import os
 
 class DetailsSpider(scrapy.Spider):
     name = 'details'
     allowed_domains = ['beeng.net']
 
     def start_requests(self):
-        self.client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
+        self.client = pymongo.MongoClient(os.getenv('DATABASE_URI'))
         self.db = self.client.vncomics
         self.comics = self.db.comics
         self.category = self.db.categories

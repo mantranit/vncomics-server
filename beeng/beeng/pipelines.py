@@ -7,10 +7,11 @@
 
 import pymongo
 import datetime
+import os
 
 class ComicsPipeline:
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
+        self.client = pymongo.MongoClient(os.getenv('DATABASE_URI'))
         self.db = self.client.vncomics
 
     def close_spider(self, spider):

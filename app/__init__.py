@@ -4,13 +4,12 @@ from datetime import datetime
 import json
 from bson import ObjectId
 import pymongo
+import os
 
-from app import middleware
 from app.utils.json import Parse
 
 app = flask.Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
-app.wsgi_app = middleware.Middleware(app.wsgi_app)
 
 @app.errorhandler(403)
 def resource_not_found(e):
@@ -23,7 +22,7 @@ def resource_not_found(e):
 @app.before_request
 def before_request_func():
     apiKey = request.headers.get('x-api-key')
-    if not apiKey or apiKey != app.config['X_API_KEY']:
+    if not apiKey or apiKey != os.getenv('X_API_KEY'):
         abort(403, description="Missing x-api-key or the x-api-key is NOT match")
 
 @app.after_request
@@ -40,7 +39,7 @@ def home():
 
 @app.route("/comics", methods=['GET'])
 def comics():
-    client = pymongo.MongoClient('mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority')
+    client = pymongo.MongoClient(os.getenv('DATABASE_URI'))
     db = client.vncomics
     comics = db.comics
     rows = comics.aggregate([
