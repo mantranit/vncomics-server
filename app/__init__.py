@@ -1,15 +1,12 @@
 import flask
 from flask import make_response, request, abort, jsonify
 from datetime import datetime
-import json
-from bson import ObjectId
 import pymongo
 import os
 
 from app.utils.json import Parse
 
-app = flask.Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py')
+app = flask.Flask(__name__)
 
 @app.errorhandler(403)
 def resource_not_found(e):
