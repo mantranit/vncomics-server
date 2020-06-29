@@ -10,7 +10,7 @@ class ChaptersSpider(scrapy.Spider):
     # start_urls = ['http://beeng.net/']
 
     def start_requests(self):
-        self.client = pymongo.MongoClient(os.getenv('DATABASE_URI'))
+        self.client = pymongo.MongoClient("mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority")
         self.db = self.client.vncomics
         self.chapters = self.db.chapters
         self.row = self.chapters.find_one({"pages": {"$exists": False}})

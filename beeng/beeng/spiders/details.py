@@ -12,7 +12,7 @@ class DetailsSpider(scrapy.Spider):
     allowed_domains = ['beeng.net']
 
     def start_requests(self):
-        self.client = pymongo.MongoClient(os.getenv('DATABASE_URI'))
+        self.client = pymongo.MongoClient("mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority")
         self.db = self.client.vncomics
         self.comics = self.db.comics
         self.category = self.db.categories
