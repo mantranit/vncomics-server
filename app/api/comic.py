@@ -1,6 +1,4 @@
-import os
-from flask import current_app as app
-from flask import request
+from flask import request, current_app as app
 from app.models import Models
 from app.utils.json import JSONParser
 from bson import ObjectId
