@@ -20,6 +20,6 @@ def home():
     formatted_now = now.strftime("%A, %d %B, %Y at %X")
     return "Hello, There!" + " It's " + formatted_now
 
-ComicsRoute(app)
 HomeRoute(app)
+ComicsRoute(app)
 CategoriesRoute(app)
