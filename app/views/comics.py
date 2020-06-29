@@ -91,6 +91,13 @@ class ComicsAPI:
                     "foreignField": "_id",
                     "as": "chapters"
                 }
+            },
+            {
+                "$unset": [
+                    'chapters.comicId', 'chapters.url', 'chapters.pages',
+                    "categories.url",
+                    "url"
+                ]
             }
         ])
 
