@@ -1,67 +1,73 @@
+import os
+from flask import current_app as app
+from flask import request
 from app.models import Models
 from app.utils.json import JSONParser
 from bson import ObjectId
 
-def ComicsRoute(app):
+def ComicRoute(app):
 
-    @app.route("/api/comics", methods=['POST'])
+    @app.route("/api/comics", methods=['GET'])
     def api_comics():
-        return ComicsAPI().CtrlGetAll()
+        return ComicAPI().CtrlGetAll(request.args)
 
     @app.route("/api/comics/<id>", methods=['GET'])
     def api_comicById(id):
-        return ComicsAPI().CtrlGetById(id)
+        return ComicAPI().CtrlGetById(id)
 
     pass
 
-class ComicsAPI:
+class ComicAPI:
     def __init__(self):
         model = Models()
         self.comics = model.comics
     
-    def CtrlGetAll(self):
-        rows = self.comics.aggregate([
-            { 
-                "$lookup": {
-                    "from": "authors", 
-                    "localField": "authors", 
-                    "foreignField": "_id",
-                    "as": "authors"
-                }
-            },
-            { 
-                "$lookup": {
-                    "from": "categories", 
-                    "localField": "categories", 
-                    "foreignField": "_id",
-                    "as": "categories"
-                }
-            },
-            { 
-                "$lookup": {
-                    "from": "chapters", 
-                    "localField": "chapters",  
-                    "foreignField": "_id",
-                    "as": "chapters"
-                }
-            },
-            {
-                "$project": {
-                    "name": "$name",
-                    "cover": "$cover"
-                }
-            },
-            { "$limit": 10 }
-        ])
+    def CtrlGetAll(self, parameters):
+        stages = []
 
-        tmp = list(rows)
+        text = parameters.get("text")
+        if text:
+            stages.append({ 
+                "name": { "$regex": "/" + text + "/" } 
+            })
 
-        return JSONParser({
-            "random": tmp,
-            "hotest": tmp,
-            "latest": tmp,
-            "completed": tmp,
+        category = parameters.get("category")
+        if category:
+            stages.append({
+                "$match": { "categories": ObjectId(category) }
+            })
+
+        sort = parameters.get("sort")
+        if sort:
+            if sort[0] == "-":
+                stages.append({ "$sort": { sort.strip("-"): -1 } })
+            else:
+                stages.append({ "$sort": { sort: 1 } })
+
+        skip = parameters.get("skip")
+        if not skip:
+            skip = 0
+        stages.append({ "$skip": int(skip) })
+
+        limit = parameters.get("limit")
+        if not limit:
+            limit = app.config["PAGE_SIZE_DEFAULT"]
+        stages.append({ "$limit": int(limit) })
+
+        stages.append({
+            "$unset": [
+                'chapters',
+                # "categories",
+                "authors",
+                "url",
+                "body",
+                "createdAt"
+            ]
         })
+
+        rows = self.comics.aggregate(stages)
+        return JSONParser(list(rows))
+        pass
 
     def CtrlGetById(self, id):
         rows = self.comics.aggregate([
@@ -104,4 +110,5 @@ class ComicsAPI:
         if rows.alive:
             return JSONParser(list(rows)[0])
         return JSONParser(None)
+        pass
 

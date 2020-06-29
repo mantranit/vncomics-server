@@ -1,15 +1,15 @@
 from app.models import Models
 from app.utils.json import JSONParser
 
-def CategoriesRoute(app):
+def CategoryRoute(app):
 
     @app.route("/api/categories", methods=['GET'])
     def api_categories():
-        return CategoriesAPI().CtrlGetAll()
+        return CategoryAPI().CtrlGetAll()
 
     pass
 
-class CategoriesAPI:
+class CategoryAPI:
     def __init__(self):
         model = Models()
         self.categories = model.categories
