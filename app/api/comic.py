@@ -35,6 +35,11 @@ class ComicAPI:
                 "$match": { "categories": ObjectId(category) }
             })
 
+        stage_count = list(stages)
+        stage_count.append({ "$count": "myCount" })
+        total = self.comics.aggregate(stage_count)
+        total = list(total)[0]["myCount"]
+
         sort = parameters.get("sort")
         if sort:
             if sort[0] == "-":
@@ -55,7 +60,7 @@ class ComicAPI:
         stages.append({
             "$unset": [
                 'chapters',
-                # "categories",
+                "categories",
                 "authors",
                 "url",
                 "body",
@@ -64,7 +69,12 @@ class ComicAPI:
         })
 
         rows = self.comics.aggregate(stages)
-        return JSONParser(list(rows))
+        return JSONParser({
+            "list": list(rows),
+            "total": total,
+            "skip": int(skip),
+            "limit": int(limit)
+        })
         pass
 
     def CtrlGetById(self, id):

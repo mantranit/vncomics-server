@@ -18,6 +18,8 @@ class CategoryAPI:
     def CtrlGetAll(self, parameters):
         rows = self.categories.find()
 
+        total = self.categories.count()
+
         sort = parameters.get("sort")
         if sort:
             if sort[0] == "-":
@@ -35,5 +37,9 @@ class CategoryAPI:
             limit = app.config["PAGE_SIZE_DEFAULT"]
         rows.limit(int(limit))
 
-        total = self.categories.count()
-        return JSONParser({ "list": list(rows), "total": total })
+        return JSONParser({
+            "list": list(rows),
+            "total": total,
+            "skip": int(skip),
+            "limit": int(limit)
+        })
