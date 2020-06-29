@@ -24,7 +24,11 @@ def errorHandle(app):
     def errorResponse(e, code):
         matchApi = re.match("^/api/.*", request.path)
         if matchApi:
-            return jsonify(error=str(e)), code
+            return jsonify({
+                "statusCode": code,
+                "message": str(e),
+                "data": None
+            }), code
         else:
             return str(e), code
 

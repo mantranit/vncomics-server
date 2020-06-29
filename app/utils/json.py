@@ -12,4 +12,8 @@ class JSONEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, o)
 
 def JSONParser(data):
-    return json.dumps({"data": data}, ensure_ascii=False, cls=JSONEncoder)
+    return json.dumps({
+        "statusCode": 200, 
+        "message": "Success", 
+        "data": data
+    }, ensure_ascii=False, cls=JSONEncoder)

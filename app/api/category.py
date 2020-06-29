@@ -35,4 +35,5 @@ class CategoryAPI:
             limit = app.config["PAGE_SIZE_DEFAULT"]
         rows.limit(int(limit))
 
-        return JSONParser(list(rows))
+        total = self.categories.count()
+        return JSONParser({ "list": list(rows), "total": total })
