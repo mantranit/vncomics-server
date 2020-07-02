@@ -1,3 +1,4 @@
+import re
 from flask import request, current_app as app
 from app.models import Models
 from app.utils.json import JSONParser
@@ -25,8 +26,9 @@ class ComicAPI:
 
         text = parameters.get("text")
         if text:
+            rgx = re.compile(u'.*' + text + '.*', re.IGNORECASE)  # compile the regex
             stages.append({ 
-                "name": { "$regex": "/" + text + "/" } 
+                "$name": rgx
             })
 
         category = parameters.get("category")
@@ -35,10 +37,10 @@ class ComicAPI:
                 "$match": { "categories": ObjectId(category) }
             })
 
-        stage_count = list(stages)
-        stage_count.append({ "$count": "myCount" })
-        total = self.comics.aggregate(stage_count)
-        total = list(total)[0]["myCount"]
+        # stage_count = list(stages)
+        # stage_count.append({ "$count": "myCount" })
+        # total = self.comics.aggregate(stage_count)
+        # total = list(total)[0]["myCount"]
 
         sort = parameters.get("sort")
         if sort:
@@ -57,21 +59,26 @@ class ComicAPI:
             limit = app.config["PAGE_SIZE_DEFAULT"]
         stages.append({ "$limit": int(limit) })
 
-        stages.append({
-            "$unset": [
-                'chapters',
-                "categories",
-                "authors",
-                "url",
-                "body",
-                "createdAt"
-            ]
-        })
+        # stages.append({
+        #     "$unset": [
+        #         'chapters',
+        #         "categories",
+        #         "authors",
+        #         "url",
+        #         "body",
+        #         "createdAt"
+        #     ]
+        # })
 
-        rows = self.comics.aggregate(stages)
+        # rows = self.comics.aggregate(stages)
+        print('---------------------------------------')
+        print(self.comics)
+        print('---------------------------------------')
+        rgx = re.compile(u'.*' + text + '.*', re.IGNORECASE)  # compile the regex
+        rows = self.comics.find({ "$or": [ {"name": rgx}, {"body": rgx} ] }).limit(limit)
         return JSONParser({
             "list": list(rows),
-            "total": total,
+            # "total": total,
             "skip": int(skip),
             "limit": int(limit)
         })
