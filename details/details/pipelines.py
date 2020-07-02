@@ -88,4 +88,4 @@ class DetailsPipeline:
             }
         }, upsert=False)
 
-        return item['name']
+        # return item['name']
