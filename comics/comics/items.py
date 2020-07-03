@@ -12,5 +12,6 @@ class ComicsItem(scrapy.Item):
     # define the fields for your item here like:
     name = scrapy.Field()
     cover = scrapy.Field()
+    isHot = scrapy.Field()
     url = scrapy.Field()
     pass
