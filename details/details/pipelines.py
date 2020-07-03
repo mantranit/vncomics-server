@@ -6,9 +6,8 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import pymongo
 import re
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
+import boto3
+from boto3.dynamodb.conditions import Attr
 from uuid import uuid4
 
 class DetailsPipeline:
@@ -20,10 +19,8 @@ class DetailsPipeline:
         self.categories = self.db['categories']
         self.authors = self.db['authors']
 
-        cred = credentials.Certificate("D:/Mine/vncomics-server/vncomics-firebase-adminsdk-nkc27-5cc4733250.json")
-        firebase_admin.initialize_app(cred)
-        self.db = firestore.client()
-        self.chapters = self.db.collection(u'chapters')
+        dynamodb = boto3.resource('dynamodb')
+        self.chapters = dynamodb.Table('chapters')
 
     def close_spider(self, spider):
         self.client.close()
@@ -63,19 +60,22 @@ class DetailsPipeline:
         for i in (range(len(chapters['name']))):
             cha_id = str(uuid4())
 
-            docs = self.chapters.where(u'comicId', u'==', str(item['comicId'])).where(u'name', u'==', chapters['name'][i]).stream()
-            rows = list(docs)
-            if len(rows) == 0:
-                self.chapters.document(cha_id).set({
-                    u'comicId': str(item['comicId']),
-                    u'comicName': item['name'],
-                    u'name': chapters['name'][i],
-                    u'url': chapters['url'][i],
-                    u'pages': [],
-                    u'crawled': False
-                })
+            docs = self.chapters.scan(FilterExpression=Attr('comicId').eq(str(item['comicId'])) & Attr('name').eq(chapters['name'][i]))
+            
+            if docs['Count'] == 0:
+                self.chapters.put_item(
+                    Item = {
+                        u'id': cha_id,
+                        u'comicId': str(item['comicId']),
+                        u'comicName': item['name'],
+                        u'name': chapters['name'][i],
+                        u'url': chapters['url'][i],
+                        u'pages': [],
+                        u'crawled': False
+                    }
+                )
             else:
-                cha_id = rows[0].id
+                cha_id = docs['Items'][0]['id']
             item_cha.append({ 'name': chapters['name'][i], 'chapterId': cha_id })
         
         self.comics.update_one({
@@ -91,7 +91,8 @@ class DetailsPipeline:
                 u'viewed': item['viewed'],
                 u'followed': item['followed'],
                 u'createdAt': item['updatedAt'],
-                u'updatedAt': item['updatedAt']
+                u'updatedAt': item['updatedAt'],
+                u'crawled': True
             }
         }, upsert=False)
 

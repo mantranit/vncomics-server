@@ -15,7 +15,7 @@ class NettruyenSpider(scrapy.Spider):
         self.db = self.client.get_default_database()
         self.comics = self.db['comics']
         
-        self.row = self.comics.find_one({"body": {"$exists": False}})
+        self.row = self.comics.find_one({"crawled": {"$exists": False}})
         if self.row:
             resp = requests.head(self.row['url'])
             if resp.status_code == 404:
@@ -62,7 +62,7 @@ class NettruyenSpider(scrapy.Spider):
 
         # next url
         time.sleep(0.2)
-        self.row = self.comics.find_one({"body": {"$exists": False}})
+        self.row = self.comics.find_one({"crawled": {"$exists": False}})
         if self.row:
             resp = requests.head(self.row['url'])
             if resp.status_code == 404:
