@@ -8,6 +8,7 @@ from app.utils.json import JSONParser
 from app.utils import middleware, errorHandle
 from app.api.home import HomeRoute
 from app.api.comic import ComicRoute
+from app.api.author import AuthorRoute
 from app.api.category import CategoryRoute
 from app.api.chapter import ChapterRoute
 
@@ -20,6 +21,7 @@ errorHandle(app)
 HomeRoute(app)
 ComicRoute(app)
 CategoryRoute(app)
+AuthorRoute(app)
 ChapterRoute(app)
 
 # WEB

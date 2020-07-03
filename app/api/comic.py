@@ -37,6 +37,12 @@ class ComicAPI:
                 "$match": { "categories": ObjectId(category) }
             })
 
+        author = parameters.get("author")
+        if author:
+            stages.append({
+                "$match": { "authors": ObjectId(author) }
+            })
+
         total = 0
         stage_count = list(stages)
         stage_count.append({ "$count": "myCount" })
