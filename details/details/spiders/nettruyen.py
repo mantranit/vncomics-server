@@ -6,7 +6,7 @@ import time
 
 class NettruyenSpider(scrapy.Spider):
     name = 'nettruyen'
-    allowed_domains = ['nettruyen.com']
+    # allowed_domains = ['nettruyen.com']
     # start_urls = ['http://nettruyen.com/']
 
     def start_requests(self):
