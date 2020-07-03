@@ -37,10 +37,13 @@ class ComicAPI:
                 "$match": { "categories": ObjectId(category) }
             })
 
+        total = 0
         stage_count = list(stages)
         stage_count.append({ "$count": "myCount" })
-        total = self.comics.aggregate(stage_count)
-        total = list(total)[0]["myCount"]
+        resultCount = self.comics.aggregate(stage_count)
+        resultCount = list(resultCount)
+        if resultCount:
+            total = resultCount[0]["myCount"]
 
         sort = parameters.get("sort")
         if sort:
