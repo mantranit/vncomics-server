@@ -67,6 +67,7 @@ class NettruyenSpider(scrapy.Spider):
             resp = requests.head(self.row['url'])
             if resp.status_code == 404:
                 self.comics.delete_one({"_id": self.row['_id']})
+                self.row = self.comics.find_one({"crawled": {"$exists": False}})
             else:
                 yield scrapy.Request(url=self.row['url'], callback=self.parse)
         
