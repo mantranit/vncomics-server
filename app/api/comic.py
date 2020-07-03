@@ -28,7 +28,7 @@ class ComicAPI:
         if text:
             rgx = re.compile(u'.*' + text + '.*', re.IGNORECASE)  # compile the regex
             stages.append({ 
-                "$name": rgx
+                '$match': { "$or": [ {"name": rgx}, {"nameNoAccent": rgx}, {"body": rgx} ] }
             })
 
         category = parameters.get("category")
@@ -37,10 +37,10 @@ class ComicAPI:
                 "$match": { "categories": ObjectId(category) }
             })
 
-        # stage_count = list(stages)
-        # stage_count.append({ "$count": "myCount" })
-        # total = self.comics.aggregate(stage_count)
-        # total = list(total)[0]["myCount"]
+        stage_count = list(stages)
+        stage_count.append({ "$count": "myCount" })
+        total = self.comics.aggregate(stage_count)
+        total = list(total)[0]["myCount"]
 
         sort = parameters.get("sort")
         if sort:
@@ -59,26 +59,23 @@ class ComicAPI:
             limit = app.config["PAGE_SIZE_DEFAULT"]
         stages.append({ "$limit": int(limit) })
 
-        # stages.append({
-        #     "$unset": [
-        #         'chapters',
-        #         "categories",
-        #         "authors",
-        #         "url",
-        #         "body",
-        #         "createdAt"
-        #     ]
-        # })
+        stages.append({
+            "$project": {
+                "nameNoAccent": 0,
+                "chapters": 0,
+                "categories": 0,
+                "authors": 0,
+                "url": 0,
+                "body": 0,
+                "createdAt": 0
+            }
+        })
 
-        # rows = self.comics.aggregate(stages)
-        print('---------------------------------------')
-        print(self.comics)
-        print('---------------------------------------')
-        rgx = re.compile(u'.*' + text + '.*', re.IGNORECASE)  # compile the regex
-        rows = self.comics.find({ "$or": [ {"name": rgx}, {"body": rgx} ] }).limit(limit)
+        rows = self.comics.aggregate(stages)
+        
         return JSONParser({
             "list": list(rows),
-            # "total": total,
+            "total": total,
             "skip": int(skip),
             "limit": int(limit)
         })
@@ -114,11 +111,10 @@ class ComicAPI:
                 }
             },
             {
-                "$unset": [
-                    'chapters.comicId', 'chapters.url', 'chapters.pages',
-                    "categories.url",
-                    "url"
-                ]
+                "$project": {
+                    'nameNoAccent': 0,
+                    "url": 0
+                }
             }
         ])
 
