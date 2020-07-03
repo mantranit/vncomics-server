@@ -11,6 +11,7 @@ import scrapy
 class DetailsItem(scrapy.Item):
     # define the fields for your item here like:
     comicId = scrapy.Field()
+    name = scrapy.Field()
     altName = scrapy.Field()
     body = scrapy.Field()
     status = scrapy.Field()
@@ -19,4 +20,5 @@ class DetailsItem(scrapy.Item):
     chapters = scrapy.Field()
     viewed = scrapy.Field()
     followed = scrapy.Field()
+    updatedAt = scrapy.Field()
     pass

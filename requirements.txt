@@ -4,4 +4,3 @@ flask
 pymongo
 dnspython
 requests
-boto3

@@ -5,12 +5,30 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import pymongo
+import re
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from uuid import uuid4
 
 class DetailsPipeline:
+    def no_accent_vietnamese(self, s):
+        s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
+        s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
+        s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
+        s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
+        s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
+        s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
+        s = re.sub(r'[ìíịỉĩ]', 'i', s)
+        s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
+        s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
+        s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
+        s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
+        s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
+        s = re.sub(r'[Đ]', 'D', s)
+        s = re.sub(r'[đ]', 'd', s)
+        return s
+
     def open_spider(self, spider):
         self.client = pymongo.MongoClient("mongodb://heroku_f1mzb91l:61ra6cfnh8lse8d1ju2quaq0n9@ds239557.mlab.com:39557/heroku_f1mzb91l?retryWrites=false")
         self.db = self.client.get_default_database()
@@ -18,7 +36,7 @@ class DetailsPipeline:
         self.categories = self.db['categories']
         self.authors = self.db['authors']
 
-        cred = credentials.Certificate("D:/Mine/vncomics-server/vncomics-f3294-firebase-adminsdk-1icod-cc07f54e46.json")
+        cred = credentials.Certificate("D:/Mine/vncomics-server/vncomics-firebase-adminsdk-nkc27-5cc4733250.json")
         firebase_admin.initialize_app(cred)
         self.db = firestore.client()
         self.chapters = self.db.collection(u'chapters')
@@ -67,7 +85,9 @@ class DetailsPipeline:
                 self.chapters.document(cha_id).set({
                     u'comicId': str(item['comicId']),
                     u'name': chapters['name'][i],
-                    u'url': chapters['url'][i]
+                    u'url': chapters['url'][i],
+                    u'pages': [],
+                    u'crawled': False
                 })
             else:
                 cha_id = rows[0].id
@@ -77,14 +97,20 @@ class DetailsPipeline:
             '_id': item['comicId']
         },{
             '$set': {
-                'altName': item['altName'],
-                'body': item['body'],
-                'status': item['status'],
-                'categories': item_cat,
-                'authors': item_aut,
-                'chapters': item_cha,
-                'viewed': item['viewed'],
-                'followed': item['followed'],
+                u'nameNoAccent': self.no_accent_vietnamese(item['name']),
+                u'altName': item['altName'],
+                u'body': item['body'],
+                u'status': item['status'],
+                u'categories': categories,
+                u'categoryIds': item_cat,
+                u'authors': authors,
+                u'authorIds': item_aut,
+                u'chapters': item_cha,
+                u'viewed': item['viewed'],
+                u'followed': item['followed'],
+                u'crawled': True,
+                u'createdAt': item['updatedAt'],
+                u'updatedAt': item['updatedAt']
             }
         }, upsert=False)
 
