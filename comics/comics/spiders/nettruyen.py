@@ -39,8 +39,6 @@ class NettruyenSpider(scrapy.Spider):
             time.sleep(0.3)
             yield scrapy.Request(url=item_url, callback=self.parse_detail)
 
-            break
-
         time.sleep(2)
         next_url_path = response.css(".pagination a.next-page::attr('href')").extract_first()
         if next_url_path:

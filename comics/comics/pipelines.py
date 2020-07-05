@@ -43,7 +43,7 @@ class ComicsPipeline:
         rowComic = self.comics.find_one({u'name': item['name']})
 
         if "nonexistent altName" in item:
-            if rowComic == 0:
+            if not rowComic:
                 self.comics.insert_one({
                     u'name': item['name'],
                     u'nameNoAccent': self.no_accent_vietnamese(item['name']),
@@ -52,7 +52,7 @@ class ComicsPipeline:
                     u'url': item['url']
                 })
         else:
-            if rowComic > 0:
+            if rowComic:
                 item_cat = []
                 categories = item['categories']
                 for i in (range(len(categories))):
