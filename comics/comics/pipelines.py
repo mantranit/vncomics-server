@@ -29,24 +29,73 @@ class ComicsPipeline:
         return s
 
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient("mongodb://heroku_f1mzb91l:61ra6cfnh8lse8d1ju2quaq0n9@ds239557.mlab.com:39557/heroku_f1mzb91l?retryWrites=false")
-        self.db = self.client.get_default_database()
-        self.comics = self.db['comics']
+        self.client = pymongo.MongoClient("mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority")
+        self.db = self.client.vncomics
+        self.comics = self.db.comics
+        self.categories = self.db.categories
+        self.authors = self.db.authors
 
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
-        row = self.comics.count_documents({u'name': item['name']})
-        if row > 0:
-            print(row)
+
+        rowComic = self.comics.find_one({u'name': item['name']})
+
+        if "nonexistent altName" in item:
+            if rowComic == 0:
+                self.comics.insert_one({
+                    u'name': item['name'],
+                    u'nameNoAccent': self.no_accent_vietnamese(item['name']),
+                    u'cover': item['cover'],
+                    u'isHot': item['isHot'],
+                    u'url': item['url']
+                })
         else:
-            self.comics.insert_one({
-                u'name': item['name'],
-                u'nameNoAccent': self.no_accent_vietnamese(item['name']),
-                u'cover': item['cover'],
-                u'isHot': item['isHot'],
-                u'url': item['url']
-            })
+            if rowComic > 0:
+                item_cat = []
+                categories = item['categories']
+                for i in (range(len(categories))):
+                    cat_id = ''
+                    row = self.categories.find_one({"name": categories[i]})
+                    if not row:
+                        row = self.categories.insert_one({
+                            "name": categories[i]
+                        })
+                        cat_id = row.inserted_id
+                    else:
+                        cat_id = row['_id']
+                    item_cat.append(cat_id)
+
+                item_aut = []
+                authors = item['authors']
+                for i in (range(len(authors))):
+                    cat_id = ''
+                    row = self.authors.find_one({"name": authors[i]})
+                    if not row:
+                        row = self.authors.insert_one({
+                            "name": authors[i]
+                        })
+                        cat_id = row.inserted_id
+                    else:
+                        cat_id = row['_id']
+                    item_aut.append(cat_id)
+                
+                self.comics.update_one({
+                    '_id': rowComic['_id']
+                },{
+                    '$set': {
+                        u'cover': item['cover'],
+                        u'altName': item['altName'],
+                        u'body': item['body'],
+                        u'status': item['status'],
+                        u'categories': item_cat,
+                        u'authors': item_aut,
+                        u'viewed': item['viewed'],
+                        u'followed': item['followed'],
+                        u'createdAt': item['updatedAt'],
+                        u'updatedAt': item['updatedAt']
+                    }
+                }, upsert=False)
         
-        return '-------------' + item['name']
+        return item
