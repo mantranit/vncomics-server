@@ -52,7 +52,7 @@ class NettruyenSpider(scrapy.Spider):
         item_altName = response.css('#ctl00_divCenter .detail-info .othername .other-name::text').extract_first()
         item_body = response.css('#ctl00_divCenter .detail-content p').extract_first()
         item_body = re.sub(r'<(.*?)>', '', item_body)
-        item_body = re.sub(r'\xa0', '', item_body).strip()
+        item_body = re.sub(r'\xa0', ' ', item_body).strip()
         item_status = response.css('#ctl00_divCenter .detail-info .status .col-xs-8::text').extract_first()
         if item_status == "Đang tiến hành":
             item_status = 0
