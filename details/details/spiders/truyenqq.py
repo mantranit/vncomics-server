@@ -27,11 +27,15 @@ class TruyenqqSpider(scrapy.Spider):
                     return row
             else:
                 return None
+        
+        pass
 
     def start_requests(self):
         self.row = self.get_url()
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)
+        
+        pass
 
     def parse(self, response):
         item_altName = None
@@ -74,8 +78,8 @@ class TruyenqqSpider(scrapy.Spider):
 
         # next url
         time.sleep(1)
-        next_row = self.get_url()
-        if next_row:
-            yield scrapy.Request(url=next_row['url'], callback=self.parse)
+        self.row = self.get_url()
+        if self.row:
+            yield scrapy.Request(url=self.row['url'], callback=self.parse)
         
         pass
