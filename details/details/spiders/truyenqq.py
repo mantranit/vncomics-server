@@ -18,7 +18,7 @@ class TruyenqqSpider(scrapy.Spider):
 
     def get_url(self):
         while True:
-            row = self.comics.find_one({"body": {"$exists": False}})
+            row = self.comics.find_one({"body": {"$exists": False}, "referer": self.name})
             if row:
                 resp = requests.head(row['url'])
                 if resp.status_code == 404:
@@ -66,15 +66,16 @@ class TruyenqqSpider(scrapy.Spider):
             chapterUrls=item_chapterUrls,
             viewed=item_viewed,
             followed=item_followed,
-            updatedAt=item_updatedAt
+            updatedAt=item_updatedAt,
+            referer=self.name
         )
 
         yield obj
 
         # next url
         time.sleep(1)
-        next_url = self.get_url()
-        if next_url:
-            yield scrapy.Request(url=next_url, callback=self.parse)
+        next_row = self.get_url()
+        if next_row:
+            yield scrapy.Request(url=next_row['url'], callback=self.parse)
         
         pass

@@ -45,7 +45,8 @@ class ComicsPipeline:
                 u'nameNoAccent': self.no_accent_vietnamese(item['name']),
                 u'cover': item['cover'],
                 u'isHot': item['isHot'],
-                u'url': item['url']
+                u'url': item['url'],
+                u'referer': item['referer']
             })
         
         return item

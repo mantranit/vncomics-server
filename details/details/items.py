@@ -22,4 +22,5 @@ class DetailsItem(scrapy.Item):
     viewed = scrapy.Field()
     followed = scrapy.Field()
     updatedAt = scrapy.Field()
+    referer = scrapy.Field()
     pass

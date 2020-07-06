@@ -20,6 +20,7 @@ class TruyenqqSpider(scrapy.Spider):
             item_cover = unquote_plus(item_cover)
             item_url = block.css('.story-item > a::attr(href)').extract_first()
             item_hot = block.css('.story-item .top-notice .hot').extract_first()
+            
             if item_hot:
                 item_hot = True
             else:
@@ -29,7 +30,8 @@ class TruyenqqSpider(scrapy.Spider):
                 name=item_name,
                 cover=item_cover,
                 isHot=item_hot,
-                url=item_url
+                url=item_url,
+                referer=self.name
             )
             yield obj
 

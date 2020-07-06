@@ -14,4 +14,5 @@ class ComicsItem(scrapy.Item):
     cover = scrapy.Field()
     isHot = scrapy.Field()
     url = scrapy.Field()
+    referer = scrapy.Field()
     pass

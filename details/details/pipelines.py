@@ -72,8 +72,8 @@ class DetailsPipeline:
                         u'comicName': item['name'],
                         u'name': chapterNames[i],
                         u'url': chapterUrls[i],
-                        u'pages': [],
-                        u'crawled': False
+                        u'pages': False,
+                        u'referer': item['referer']
                     }
                 )
             else:
