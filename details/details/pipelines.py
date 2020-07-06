@@ -13,11 +13,11 @@ from uuid import uuid4
 class DetailsPipeline:
     
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient("mongodb://heroku_f1mzb91l:61ra6cfnh8lse8d1ju2quaq0n9@ds239557.mlab.com:39557/heroku_f1mzb91l?retryWrites=false")
-        self.db = self.client.get_default_database()
-        self.comics = self.db['comics']
-        self.categories = self.db['categories']
-        self.authors = self.db['authors']
+        self.client = pymongo.MongoClient("mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority")
+        self.db = self.client.vncomics
+        self.comics = self.db.comics
+        self.categories = self.db.categories
+        self.authors = self.db.authors
 
         dynamodb = boto3.resource('dynamodb')
         self.chapters = dynamodb.Table('chapters')
@@ -44,23 +44,25 @@ class DetailsPipeline:
         item_aut = []
         authors = item['authors']
         for i in (range(len(authors))):
-            cat_id = ''
-            row = self.authors.find_one({"name": authors[i]})
-            if not row:
-                row = self.authors.insert_one({
-                    "name": authors[i]
-                })
-                cat_id = row.inserted_id
-            else:
-                cat_id = row['_id']
-            item_aut.append(cat_id)
+            if authors[i] != "Đang Cập Nhật":
+                cat_id = ''
+                row = self.authors.find_one({"name": authors[i]})
+                if not row:
+                    row = self.authors.insert_one({
+                        "name": authors[i]
+                    })
+                    cat_id = row.inserted_id
+                else:
+                    cat_id = row['_id']
+                item_aut.append(cat_id)
 
         item_cha = []
-        chapters = item['chapters']
-        for i in (range(len(chapters['name']))):
+        chapterNames = item['chapterNames']
+        chapterUrls = item['chapterUrls']
+        for i in (range(len(chapterNames))):
             cha_id = str(uuid4())
 
-            docs = self.chapters.scan(FilterExpression=Attr('comicId').eq(str(item['comicId'])) & Attr('name').eq(chapters['name'][i]))
+            docs = self.chapters.scan(FilterExpression=Attr('comicId').eq(str(item['comicId'])) & Attr('name').eq(chapterNames[i]))
             
             if docs['Count'] == 0:
                 self.chapters.put_item(
@@ -68,15 +70,15 @@ class DetailsPipeline:
                         u'id': cha_id,
                         u'comicId': str(item['comicId']),
                         u'comicName': item['name'],
-                        u'name': chapters['name'][i],
-                        u'url': chapters['url'][i],
+                        u'name': chapterNames[i],
+                        u'url': chapterUrls[i],
                         u'pages': [],
                         u'crawled': False
                     }
                 )
             else:
                 cha_id = docs['Items'][0]['id']
-            item_cha.append({ 'name': chapters['name'][i], 'chapterId': cha_id })
+            item_cha.append({ 'name': chapterNames[i], 'chapterId': cha_id })
         
         self.comics.update_one({
             '_id': item['comicId']
@@ -91,8 +93,7 @@ class DetailsPipeline:
                 u'viewed': item['viewed'],
                 u'followed': item['followed'],
                 u'createdAt': item['updatedAt'],
-                u'updatedAt': item['updatedAt'],
-                u'crawled': True
+                u'updatedAt': item['updatedAt']
             }
         }, upsert=False)
 
