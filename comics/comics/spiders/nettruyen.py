@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import time
-import re
-from datetime import datetime
-from uuid import uuid4
 from urllib.parse import unquote_plus
 from comics.items import ComicsItem
 

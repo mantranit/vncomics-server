@@ -32,8 +32,6 @@ class ComicsPipeline:
         self.client = pymongo.MongoClient("mongodb+srv://vncomics:vncomics@cluster0-6ulnw.mongodb.net/vncomics?retryWrites=true&w=majority")
         self.db = self.client.vncomics
         self.comics = self.db.comics
-        self.categories = self.db.categories
-        self.authors = self.db.authors
 
     def close_spider(self, spider):
         self.client.close()
