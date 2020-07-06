@@ -41,61 +41,13 @@ class ComicsPipeline:
     def process_item(self, item, spider):
 
         rowComic = self.comics.find_one({u'name': item['name']})
-
-        if "nonexistent altName" in item:
-            if not rowComic:
-                self.comics.insert_one({
-                    u'name': item['name'],
-                    u'nameNoAccent': self.no_accent_vietnamese(item['name']),
-                    u'cover': item['cover'],
-                    u'isHot': item['isHot'],
-                    u'url': item['url']
-                })
-        else:
-            if rowComic:
-                item_cat = []
-                categories = item['categories']
-                for i in (range(len(categories))):
-                    cat_id = ''
-                    row = self.categories.find_one({"name": categories[i]})
-                    if not row:
-                        row = self.categories.insert_one({
-                            "name": categories[i]
-                        })
-                        cat_id = row.inserted_id
-                    else:
-                        cat_id = row['_id']
-                    item_cat.append(cat_id)
-
-                item_aut = []
-                authors = item['authors']
-                for i in (range(len(authors))):
-                    cat_id = ''
-                    row = self.authors.find_one({"name": authors[i]})
-                    if not row:
-                        row = self.authors.insert_one({
-                            "name": authors[i]
-                        })
-                        cat_id = row.inserted_id
-                    else:
-                        cat_id = row['_id']
-                    item_aut.append(cat_id)
-                
-                self.comics.update_one({
-                    '_id': rowComic['_id']
-                },{
-                    '$set': {
-                        u'cover': item['cover'],
-                        u'altName': item['altName'],
-                        u'body': item['body'],
-                        u'status': item['status'],
-                        u'categories': item_cat,
-                        u'authors': item_aut,
-                        u'viewed': item['viewed'],
-                        u'followed': item['followed'],
-                        u'createdAt': item['updatedAt'],
-                        u'updatedAt': item['updatedAt']
-                    }
-                }, upsert=False)
+        if not rowComic:
+            self.comics.insert_one({
+                u'name': item['name'],
+                u'nameNoAccent': self.no_accent_vietnamese(item['name']),
+                u'cover': item['cover'],
+                u'isHot': item['isHot'],
+                u'url': item['url']
+            })
         
         return item
