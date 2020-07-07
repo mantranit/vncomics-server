@@ -16,46 +16,21 @@ class HomeAPI:
         self.comics = model.comics
     
     def CtrlGet(self):
-        rows = self.comics.aggregate([
-            { 
-                "$lookup": {
-                    "from": "authors", 
-                    "localField": "authors", 
-                    "foreignField": "_id",
-                    "as": "authors"
-                }
-            },
-            { 
-                "$lookup": {
-                    "from": "categories", 
-                    "localField": "categories", 
-                    "foreignField": "_id",
-                    "as": "categories"
-                }
-            },
-            { 
-                "$lookup": {
-                    "from": "chapters", 
-                    "localField": "chapters",  
-                    "foreignField": "_id",
-                    "as": "chapters"
-                }
-            },
-            {
-                "$project": {
-                    "name": "$name",
-                    "cover": "$cover"
-                }
-            },
-            { "$limit": 12 }
-        ])
+        randomDb = self.comics.aggregate( [ { "$sample": { "size" : 12} }, { "$project": { "_id": 1, "name": 1, "cover": 1 } } ] )  
+        latestDb = self.comics.find({},{ "_id": 1, "name": 1, "cover": 1 }).sort("updatedAt", -1).limit(12)
+        hotestDb = self.comics.find({ "isHot": True },{ "_id": 1, "name": 1, "cover": 1 }).limit(12)
+        completedDb = self.comics.find({ "status": 1 },{ "_id": 1, "name": 1, "cover": 1 }).limit(12)
 
-        tmp = list(rows)
+        completed = list(completedDb)
+        if len(completed) == 0:
+            completed = list(randomDb)
+
+        tmp = list(latestDb)
 
         return JSONParser({
-            "random": tmp,
-            "hotest": tmp,
+            "random": list(randomDb),
+            "hotest": list(hotestDb),
             "latest": tmp,
-            "completed": tmp,
+            "completed": completed,
         })
 
