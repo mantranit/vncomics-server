@@ -29,11 +29,12 @@ class NettruyenSpider(scrapy.Spider):
                 name=item_name,
                 cover=item_cover,
                 isHot=item_hot,
-                url=item_url
+                url=item_url,
+                referer=self.name
             )
             yield obj
 
-        time.sleep(2)
+        time.sleep(3)
         next_url_path = response.css(".pagination a.next-page::attr('href')").extract_first()
         if next_url_path:
             yield scrapy.Request(url=next_url_path, callback=self.parse)

@@ -59,26 +59,26 @@ class DetailsPipeline:
         item_cha = []
         chapterNames = item['chapterNames']
         chapterUrls = item['chapterUrls']
-        for i in (range(len(chapterNames))):
-            cha_id = str(uuid4())
-
-            docs = self.chapters.scan(FilterExpression=Attr('comicId').eq(str(item['comicId'])) & Attr('name').eq(chapterNames[i]))
-            
-            if docs['Count'] == 0:
-                self.chapters.put_item(
+        with self.chapters.batch_writer() as batch:
+            for i in (range(len(chapterNames))):
+                cha_id = str(uuid4())
+                # docs = self.chapters.scan(FilterExpression=Attr('comicId').eq(str(item['comicId'])) & Attr('name').eq(chapterNames[i]))
+                # if docs['Count'] == 0:
+                batch.put_item(
                     Item = {
                         u'id': cha_id,
                         u'comicId': str(item['comicId']),
                         u'comicName': item['name'],
                         u'name': chapterNames[i],
                         u'url': chapterUrls[i],
-                        u'pages': False,
-                        u'referer': item['referer']
+                        u'pages': [],
+                        u'referer': item['referer'],
+                        u'crawled': False
                     }
                 )
-            else:
-                cha_id = docs['Items'][0]['id']
-            item_cha.append({ 'name': chapterNames[i], 'chapterId': cha_id })
+                # else:
+                    # cha_id = docs['Items'][0]['id']
+                item_cha.append({ 'name': chapterNames[i], 'chapterId': cha_id })
         
         self.comics.update_one({
             '_id': item['comicId']
@@ -93,7 +93,8 @@ class DetailsPipeline:
                 u'viewed': item['viewed'],
                 u'followed': item['followed'],
                 u'createdAt': item['updatedAt'],
-                u'updatedAt': item['updatedAt']
+                u'updatedAt': item['updatedAt'],
+                u'crawled': True
             }
         }, upsert=False)
 

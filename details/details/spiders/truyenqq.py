@@ -77,7 +77,7 @@ class TruyenqqSpider(scrapy.Spider):
         yield obj
 
         # next url
-        time.sleep(1)
+        time.sleep(3)
         self.row = self.get_url()
         if self.row:
             yield scrapy.Request(url=self.row['url'], callback=self.parse)

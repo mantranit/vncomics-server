@@ -48,5 +48,16 @@ class ComicsPipeline:
                 u'url': item['url'],
                 u'referer': item['referer']
             })
+        else:
+            self.comics.update_one({
+                '_id': rowComic['_id']
+            },{
+                '$set': {
+                    u'cover': item['cover'],
+                    u'isHot': item['isHot'],
+                    u'url': item['url'],
+                    u'referer': item['referer']
+                }
+            }, upsert=False)
         
         return item
