@@ -21,14 +21,15 @@ class HomeAPI:
         hotestDb = self.comics.find({ "isHot": True },{ "_id": 1, "name": 1, "cover": 1 }).limit(12)
         completedDb = self.comics.find({ "status": 1 },{ "_id": 1, "name": 1, "cover": 1 }).limit(12)
 
+        random = list(randomDb)
         completed = list(completedDb)
         if len(completed) == 0:
-            completed = list(randomDb)
+            completed = random
 
         tmp = list(latestDb)
 
         return JSONParser({
-            "random": list(randomDb),
+            "random": random,
             "hotest": list(hotestDb),
             "latest": tmp,
             "completed": completed,
