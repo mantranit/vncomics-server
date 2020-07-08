@@ -14,6 +14,11 @@ def ComicRoute(app):
     def api_comicById(id):
         return ComicAPI().CtrlGetById(id)
 
+
+    @app.route("/api/countdown", methods=['GET'])
+    def api_countdown():
+        return ComicAPI().CtrlCountDown()
+
     pass
 
 class ComicAPI:
@@ -130,5 +135,11 @@ class ComicAPI:
         if rows.alive:
             return JSONParser(list(rows)[0])
         return JSONParser(None)
+        pass
+
+    def CtrlCountDown(self):
+        remain = self.comics.count({"crawled": {"$exists": False}})
+        total = self.comics.count()
+        return { "total": total, "remain": remain, "percent": round(((total - remain)/total) * 100, 2) }
         pass
 
