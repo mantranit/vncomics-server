@@ -81,7 +81,10 @@ class ComicAPI:
                 "authors": 0,
                 "url": 0,
                 "body": 0,
-                "createdAt": 0
+                "createdAt": 0,
+                "altName": 0,
+                "referer": 0,
+                "crawled": 0
             }
         })
 
@@ -127,7 +130,9 @@ class ComicAPI:
             {
                 "$project": {
                     'nameNoAccent': 0,
-                    "url": 0
+                    "url": 0,
+                    "referer": 0,
+                    "crawled": 0
                 }
             }
         ])
