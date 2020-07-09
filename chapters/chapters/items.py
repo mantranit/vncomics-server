@@ -10,6 +10,7 @@ import scrapy
 
 class ChaptersItem(scrapy.Item):
     # define the fields for your item here like:
+    id = scrapy.Field()
     comicId = scrapy.Field()
     pages = scrapy.Field()
     createdAt = scrapy.Field()
