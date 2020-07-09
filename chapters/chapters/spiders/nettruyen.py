@@ -59,7 +59,7 @@ class NettruyenSpider(scrapy.Spider):
 
         yield obj
         
-        time.sleep(3)
+        time.sleep(1)
         self.item = self.get_url()
         if self.item:
             print('---------------------' + self.item['url'] + '----------------')
