@@ -1,6 +1,8 @@
 from app.models import Models
 from app.utils.json import JSONParser
 from bson import ObjectId
+from boto3.dynamodb.types import TypeDeserializer
+from flask import abort
 
 def ChapterRoute(app):
 
@@ -24,5 +26,11 @@ class ChapterAPI:
                 }
             }
         )
+        
+        if 'Item' in row:
+            deserializer = TypeDeserializer()
+            data = {k: deserializer.deserialize(v) for k,v in row['Item'].items()}
 
-        return JSONParser(row)
+            return JSONParser(data)
+        
+        return abort(404, id)
