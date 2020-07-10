@@ -119,14 +119,6 @@ class ComicAPI:
                     "as": "categories"
                 }
             },
-            { 
-                "$lookup": {
-                    "from": "chapters", 
-                    "localField": "chapters",  
-                    "foreignField": "_id",
-                    "as": "chapters"
-                }
-            },
             {
                 "$project": {
                     'nameNoAccent': 0,
