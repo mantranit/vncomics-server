@@ -13,9 +13,16 @@ def ChapterRoute(app):
 class ChapterAPI:
     def __init__(self):
         model = Models()
-        self.chapters = model.chapters
+        self.dynamodb = model.dynamodb
     
     def CtrlGetById(self, id):
-        row = self.chapters.find_one({ "_id": ObjectId(id) })
+        row = self.dynamodb.get_item(
+            TableName='chapters',
+            Key={
+                'id': {
+                    'S': id
+                }
+            }
+        )
 
         return JSONParser(row)
