@@ -14,4 +14,5 @@ class ChaptersItem(scrapy.Item):
     comicId = scrapy.Field()
     pages = scrapy.Field()
     createdAt = scrapy.Field()
+    url = scrapy.Field()
     pass
