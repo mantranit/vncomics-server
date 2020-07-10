@@ -15,7 +15,7 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 0
+    segment = 1283
 
     def get_url(self):
         while True:
@@ -38,8 +38,11 @@ class NettruyenSpider(scrapy.Spider):
     def start_requests(self):
         self.item = self.get_url()
         if self.item:
-            print('----------'+str(self.segment)+'-----------' + self.item['url'] + '----------------')
-            yield scrapy.Request(url=self.item['url'], callback=self.parse)
+            url = self.item['url']
+            url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
+            url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
+            print('----------'+str(self.segment)+'-----------' + url + '----------------')
+            yield scrapy.Request(url=url, callback=self.parse)
         pass
 
     def parse(self, response):
@@ -62,7 +65,10 @@ class NettruyenSpider(scrapy.Spider):
         time.sleep(1)
         self.item = self.get_url()
         if self.item:
-            print('---------------------' + self.item['url'] + '----------------')
-            yield scrapy.Request(url=self.item['url'], callback=self.parse)
+            url = self.item['url']
+            url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
+            url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
+            print('----------'+str(self.segment)+'-----------' + url + '----------------')
+            yield scrapy.Request(url=url, callback=self.parse)
         
         pass
