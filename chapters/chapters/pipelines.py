@@ -27,12 +27,11 @@ class ChaptersPipeline:
             Key={
                 'id': item['id']
             },
-            UpdateExpression="set pages=:p, createdAt=:c, crawled=:cr, url=:u",
+            UpdateExpression="set pages=:p, createdAt=:c, crawled=:cr",
             ExpressionAttributeValues={
                 ':p': item['pages'],
                 ':c': item['createdAt'].strftime("%Y-%m-%d %H:%M:%S"),
-                ':cr': True,
-                ':u': item['url']
+                ':cr': True
             },
             ReturnValues="UPDATED_NEW"
         )
