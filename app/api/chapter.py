@@ -1,6 +1,7 @@
 from app.models import Models
 from app.utils.json import JSONParser
 from bson import ObjectId
+import boto3
 from boto3.dynamodb.types import TypeDeserializer
 from flask import abort
 
@@ -18,18 +19,32 @@ class ChapterAPI:
         self.dynamodb = model.dynamodb
     
     def CtrlGetById(self, id):
-        row = self.dynamodb.get_item(
-            TableName='chapters',
+
+        dynamodb = boto3.resource('dynamodb')
+        chapters = dynamodb.Table('chapters')
+
+        row = chapters.get_item(
             Key={
-                'id': {
-                    'S': id
-                }
+                'id': id
             }
         )
+
+        print('-----------------')
+        print(row)
+
+        # row = self.dynamodb.get_item(
+        #     TableName='chapters',
+        #     Key={
+        #         'id': {
+        #             'S': id
+        #         }
+        #     }
+        # )
         
         if 'Item' in row:
-            deserializer = TypeDeserializer()
-            data = {k: deserializer.deserialize(v) for k,v in row['Item'].items()}
+            # deserializer = TypeDeserializer()
+            # data = {k: deserializer.deserialize(v) for k,v in row['Item'].items()}
+            data = row['Item']
 
             return JSONParser(data)
         
