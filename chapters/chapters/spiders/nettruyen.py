@@ -15,7 +15,7 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 2519
+    segment = 18913
 
     def get_url(self):
         while True:
@@ -25,9 +25,20 @@ class NettruyenSpider(scrapy.Spider):
                 TotalSegments=20001
             )
             if docs['Count'] > 0:
-                return docs['Items'][0]
-            elif self.segment < 20000:
-                self.segment = self.segment + 1
+                item = docs['Items'][0]
+                url = item['url']
+                url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
+                url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
+                url = url.replace("medical-return", "bac-si-trung-sinh")
+                url = url.replace("gleipnir", "soi-xich-than")
+                url = url.replace("nettruyen.com/truyen-tranh/dia-nguc-cuc-lac", "nhattruyen.com/truyen-tranh/dia-nguc-cuc-lac")
+                url = url.replace("ouroboros", "cong-ly-va-bong-toi")
+                url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
+
+                item['url'] = url
+                return item
+            elif self.segment > 0:
+                self.segment = self.segment - 1
             else:
                 return None
         
@@ -38,14 +49,6 @@ class NettruyenSpider(scrapy.Spider):
     def start_requests(self):
         self.item = self.get_url()
         if self.item:
-            url = self.item['url']
-            url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
-            url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
-            url = url.replace("medical-return", "bac-si-trung-sinh")
-            url = url.replace("gleipnir", "soi-xich-than")
-            url = url.replace("nettruyen.com/truyen-tranh/dia-nguc-cuc-lac", "nhattruyen.com/truyen-tranh/dia-nguc-cuc-lac")
-            url = url.replace("ouroboros", "cong-ly-va-bong-toi")
-            url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
             print('----------'+str(self.segment)+'-----------' + url + '----------------')
             yield scrapy.Request(url=url, callback=self.parse)
         pass
@@ -70,14 +73,6 @@ class NettruyenSpider(scrapy.Spider):
         time.sleep(1)
         self.item = self.get_url()
         if self.item:
-            url = self.item['url']
-            url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
-            url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
-            url = url.replace("medical-return", "bac-si-trung-sinh")
-            url = url.replace("gleipnir", "soi-xich-than")
-            url = url.replace("nettruyen.com/truyen-tranh/dia-nguc-cuc-lac", "nhattruyen.com/truyen-tranh/dia-nguc-cuc-lac")
-            url = url.replace("ouroboros", "cong-ly-va-bong-toi")
-            url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
             print('----------'+str(self.segment)+'-----------' + url + '----------------')
             yield scrapy.Request(url=url, callback=self.parse)
         
