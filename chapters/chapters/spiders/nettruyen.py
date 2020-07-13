@@ -15,12 +15,12 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 1283
+    segment = 2519
 
     def get_url(self):
         while True:
             docs = self.chapters.scan(
-                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name),
+                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name) & Attr('comicId').ne('5f040a8656fb09dfd5cbafbe') & Attr('comicId').ne('5f0411ec56fb09dfd5cbbcd3') & Attr('comicId').ne('5f040c7456fb09dfd5cbb2cc'),
                 Segment=self.segment,
                 TotalSegments=20001
             )
@@ -41,6 +41,11 @@ class NettruyenSpider(scrapy.Spider):
             url = self.item['url']
             url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
             url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
+            url = url.replace("medical-return", "bac-si-trung-sinh")
+            url = url.replace("gleipnir", "soi-xich-than")
+            url = url.replace("nettruyen.com/truyen-tranh/dia-nguc-cuc-lac", "nhattruyen.com/truyen-tranh/dia-nguc-cuc-lac")
+            url = url.replace("ouroboros", "cong-ly-va-bong-toi")
+            url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
             print('----------'+str(self.segment)+'-----------' + url + '----------------')
             yield scrapy.Request(url=url, callback=self.parse)
         pass
@@ -68,6 +73,11 @@ class NettruyenSpider(scrapy.Spider):
             url = self.item['url']
             url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
             url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
+            url = url.replace("medical-return", "bac-si-trung-sinh")
+            url = url.replace("gleipnir", "soi-xich-than")
+            url = url.replace("nettruyen.com/truyen-tranh/dia-nguc-cuc-lac", "nhattruyen.com/truyen-tranh/dia-nguc-cuc-lac")
+            url = url.replace("ouroboros", "cong-ly-va-bong-toi")
+            url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
             print('----------'+str(self.segment)+'-----------' + url + '----------------')
             yield scrapy.Request(url=url, callback=self.parse)
         
