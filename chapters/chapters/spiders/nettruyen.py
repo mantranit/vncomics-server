@@ -15,7 +15,7 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 18913
+    segment = 18884
 
     def get_url(self):
         while True:
@@ -49,7 +49,7 @@ class NettruyenSpider(scrapy.Spider):
     def start_requests(self):
         self.item = self.get_url()
         if self.item:
-            print('----------'+str(self.segment)+'-----------' + url + '----------------')
+            print('----------'+str(self.segment)+'-----------' + self.item['url'] + '----------------')
             yield scrapy.Request(url=url, callback=self.parse)
         pass
 
@@ -73,7 +73,7 @@ class NettruyenSpider(scrapy.Spider):
         time.sleep(1)
         self.item = self.get_url()
         if self.item:
-            print('----------'+str(self.segment)+'-----------' + url + '----------------')
+            print('----------'+str(self.segment)+'-----------' + self.item['url'] + '----------------')
             yield scrapy.Request(url=url, callback=self.parse)
         
         pass
