@@ -50,7 +50,7 @@ class NettruyenSpider(scrapy.Spider):
         self.item = self.get_url()
         if self.item:
             print('----------'+str(self.segment)+'-----------' + self.item['url'] + '----------------')
-            yield scrapy.Request(url=url, callback=self.parse)
+            yield scrapy.Request(url=self.item['url'], callback=self.parse)
         pass
 
     def parse(self, response):
@@ -74,6 +74,6 @@ class NettruyenSpider(scrapy.Spider):
         self.item = self.get_url()
         if self.item:
             print('----------'+str(self.segment)+'-----------' + self.item['url'] + '----------------')
-            yield scrapy.Request(url=url, callback=self.parse)
+            yield scrapy.Request(url=self.item['url'], callback=self.parse)
         
         pass
