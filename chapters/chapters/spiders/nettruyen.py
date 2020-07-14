@@ -20,7 +20,7 @@ class NettruyenSpider(scrapy.Spider):
     def get_url(self):
         while True:
             docs = self.chapters.scan(
-                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name) & Attr('comicId').ne('5f040a8656fb09dfd5cbafbe') & Attr('comicId').ne('5f0411ec56fb09dfd5cbbcd3') & Attr('comicId').ne('5f040c7456fb09dfd5cbb2cc') & Attr('comicId').ne('5f0405ff56fb09dfd5cba81c'),
+                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name) & Attr('comicId').ne('5f040a8656fb09dfd5cbafbe') & Attr('comicId').ne('5f0411ec56fb09dfd5cbbcd3') & Attr('comicId').ne('5f040c7456fb09dfd5cbb2cc') & Attr('comicId').ne('5f0405ff56fb09dfd5cba81c') & Attr('comicId').ne('5f0410c956fb09dfd5cbbab3'),
                 Segment=self.segment,
                 TotalSegments=20001
             )
