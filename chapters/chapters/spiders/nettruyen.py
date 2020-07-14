@@ -35,6 +35,7 @@ class NettruyenSpider(scrapy.Spider):
                 url = url.replace("ouroboros", "cong-ly-va-bong-toi")
                 url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
                 url = url.replace("shiyakusho", "van-phong-cong-chung-sau-khi-chet")
+                url = url.replace("watashi-ga-motete-dousunda", "sieu-cap-hu-nu")
 
                 item['url'] = url
                 return item
