@@ -39,6 +39,7 @@ class NettruyenSpider(scrapy.Spider):
                 url = url.replace("nettruyen.com/truyen-tranh/asadora", "nhattruyen.com/truyen-tranh/asadora")
                 url = url.replace("nettruyen.com/truyen-tranh/my-pre-wedding", "truyenchon.com/truyen/my-pre-wedding")
                 url = url.replace("nhattruyen.com/truyen-tranh/my-pre-wedding", "truyenchon.com/truyen/my-pre-wedding")
+                url = url.replace("act-age", "nu-dien-vien-tai-nang")
 
                 item['url'] = url
                 return item
