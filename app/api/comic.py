@@ -27,7 +27,16 @@ class ComicAPI:
         self.comics = model.comics
     
     def CtrlGetAll(self, parameters):
-        stages = []
+        stages = [
+            { 
+                "$lookup": {
+                    "from": "categories", 
+                    "localField": "categories", 
+                    "foreignField": "_id",
+                    "as": "categories"
+                }
+            }
+        ]
 
         text = parameters.get("text")
         if text:
@@ -77,7 +86,6 @@ class ComicAPI:
             "$project": {
                 "nameNoAccent": 0,
                 "chapters": 0,
-                "categories": 0,
                 "authors": 0,
                 "url": 0,
                 "body": 0,
