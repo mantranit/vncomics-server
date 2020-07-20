@@ -15,12 +15,12 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 4133
+    segment = 6849
 
     def get_url(self):
         while True:
             docs = self.chapters.scan(
-                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name) & Attr('comicId').ne('5f040a8656fb09dfd5cbafbe') & Attr('comicId').ne('5f0411ec56fb09dfd5cbbcd3') & Attr('comicId').ne('5f040c7456fb09dfd5cbb2cc') & Attr('comicId').ne('5f0405ff56fb09dfd5cba81c') & Attr('comicId').ne('5f0410c956fb09dfd5cbbab3'),
+                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name) & Attr('comicId').ne('5f040a8656fb09dfd5cbafbe') & Attr('comicId').ne('5f0411ec56fb09dfd5cbbcd3') & Attr('comicId').ne('5f040c7456fb09dfd5cbb2cc') & Attr('comicId').ne('5f0405ff56fb09dfd5cba81c') & Attr('comicId').ne('5f0410c956fb09dfd5cbbab3') & Attr('comicId').ne('5f0404db56fb09dfd5cba399'),
                 Segment=self.segment,
                 TotalSegments=20001
             )
@@ -42,6 +42,8 @@ class NettruyenSpider(scrapy.Spider):
                 url = url.replace("act-age", "nu-dien-vien-tai-nang")
                 url = url.replace("uzaki-chan-wa-asobitai", "uzaki-chan-muon-di-choi")
                 url = url.replace("nettruyen.com/truyen-tranh/children-of-the-whales", "nhattruyen.com/truyen-tranh/children-of-the-whales")
+                url = url.replace("the-fable", "sat-thu-truyen-thuyet")
+                url = url.replace("the-honor-student-of-magic-high-school", "truong-trung-hoc-phap-thuat")
 
                 item['url'] = url
                 return item
