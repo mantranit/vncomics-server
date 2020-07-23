@@ -15,7 +15,7 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 8226
+    segment = 9749
 
     def get_url(self):
         while True:
@@ -45,6 +45,7 @@ class NettruyenSpider(scrapy.Spider):
                 url = url.replace("the-fable", "sat-thu-truyen-thuyet")
                 url = url.replace("the-honor-student-of-magic-high-school", "truong-trung-hoc-phap-thuat")
                 url = url.replace("su-ngay-tho-toi-loi", "ngay-tho-toi-loi")
+                url = url.replace("nhattruyen.com/truyen-tranh/heavenly-match", "truyenchon.com/truyen/heavenly-match")
 
                 item['url'] = url
                 return item
