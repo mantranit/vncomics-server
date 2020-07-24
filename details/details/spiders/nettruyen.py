@@ -49,7 +49,8 @@ class NettruyenSpider(scrapy.Spider):
         item_categories = response.css('#ctl00_divCenter .detail-info .kind a::text').getall()
         item_authors = response.css('#ctl00_divCenter .detail-info .author a::text').getall()
         item_chapterNames = response.css('#nt_listchapter .row .col-xs-5 a::text').getall()
-
+        if '^# gì thế này' in item_chapterNames:
+            item_chapterNames.remove('^# gì thế này')
         item_chapterUrls = response.css('#nt_listchapter .row .col-xs-5 a::attr(href)').getall()
         item_viewed = int(response.css('#ctl00_divCenter .detail-info li:last-child .col-xs-8::text').extract_first().replace('.', ''))
         item_followed = int(response.css('#ctl00_divCenter .follow b::text').extract_first().replace('.', ''))
