@@ -15,7 +15,7 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    segment = 9749
+    segment = 0
 
     def get_url(self):
         while True:

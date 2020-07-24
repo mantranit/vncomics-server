@@ -62,8 +62,7 @@ class DetailsPipeline:
         with self.chapters.batch_writer() as batch:
             for i in (range(len(chapterNames))):
                 cha_id = str(uuid4())
-                # docs = self.chapters.scan(FilterExpression=Attr('comicId').eq(str(item['comicId'])) & Attr('name').eq(chapterNames[i]))
-                # if docs['Count'] == 0:
+                
                 batch.put_item(
                     Item = {
                         u'id': cha_id,
@@ -76,8 +75,6 @@ class DetailsPipeline:
                         u'crawled': False
                     }
                 )
-                # else:
-                    # cha_id = docs['Items'][0]['id']
                 item_cha.append({ 'name': chapterNames[i], 'chapterId': cha_id })
         
         self.comics.update_one({

@@ -19,6 +19,10 @@ def ComicRoute(app):
     def api_countdown():
         return ComicAPI().CtrlCountDown()
 
+    @app.route("/api/reset-db", methods=['POST'])
+    def api_reset_db():
+        return ComicAPI().CtrlResetDB()
+
     pass
 
 class ComicAPI:
@@ -146,5 +150,16 @@ class ComicAPI:
         remain = self.comics.count({"crawled": {"$exists": False}})
         total = self.comics.count()
         return { "total": total, "remain": remain, "percent": round(((total - remain)/total) * 100, 2) }
+        pass
+
+    def CtrlResetDB(self):
+        self.comics.update_many(
+            { 
+                "crawled": True 
+            }, {
+                "$set": { "crawled": False }
+            })
+
+        return JSONParser(None)
         pass
 

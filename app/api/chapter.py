@@ -20,31 +20,19 @@ class ChapterAPI:
     
     def CtrlGetById(self, id):
 
-        dynamodb = boto3.resource('dynamodb')
-        chapters = dynamodb.Table('chapters')
-
-        row = chapters.get_item(
+        row = self.dynamodb.get_item(
+            TableName='chapters',
             Key={
-                'id': id
+                'id': {
+                    'S': id
+                }
             }
         )
-
-        print('-----------------')
-        print(row)
-
-        # row = self.dynamodb.get_item(
-        #     TableName='chapters',
-        #     Key={
-        #         'id': {
-        #             'S': id
-        #         }
-        #     }
-        # )
         
         if 'Item' in row:
-            # deserializer = TypeDeserializer()
-            # data = {k: deserializer.deserialize(v) for k,v in row['Item'].items()}
-            data = row['Item']
+            deserializer = TypeDeserializer()
+            data = {k: deserializer.deserialize(v) for k,v in row['Item'].items()}
+            # data = row['Item']
 
             return JSONParser(data)
         
