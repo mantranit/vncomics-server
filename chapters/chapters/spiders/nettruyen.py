@@ -16,7 +16,7 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
-    logFile = open("crawled.txt","a+")
+    logFile = open("crawled.log","a+")
     segment = 0
 
     def get_url(self):
