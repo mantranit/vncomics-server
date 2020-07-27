@@ -31,7 +31,7 @@ class NettruyenSpider(scrapy.Spider):
                 resp = requests.head(item['url'])
                 if resp.status_code == 404:
                     lines = self.logFile.readlines()
-                    lines.append("ERROR" + item['url'] + "\n")
+                    lines.append("ERROR: " + item['url'] + "\n")
                     self.logFile.writelines(lines)
 
                     self.chapters.delete_item(
