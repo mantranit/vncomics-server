@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import time
+import requests
 import boto3
 from boto3.dynamodb.conditions import Attr
 import re
@@ -15,40 +16,31 @@ class NettruyenSpider(scrapy.Spider):
     dynamodb = boto3.resource('dynamodb')
     chapters = dynamodb.Table('chapters')
 
+    logFile = open("crawled.txt","a+")
     segment = 0
 
     def get_url(self):
         while True:
             docs = self.chapters.scan(
-                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name) & Attr('comicId').ne('5f040a8656fb09dfd5cbafbe') & Attr('comicId').ne('5f0411ec56fb09dfd5cbbcd3') & Attr('comicId').ne('5f040c7456fb09dfd5cbb2cc') & Attr('comicId').ne('5f0405ff56fb09dfd5cba81c') & Attr('comicId').ne('5f0410c956fb09dfd5cbbab3') & Attr('comicId').ne('5f0404db56fb09dfd5cba399') & Attr('comicId').ne('5f04120b56fb09dfd5cbbd08'),
+                FilterExpression=Attr('crawled').eq(False) & Attr('referer').eq(self.name),
                 Segment=self.segment,
                 TotalSegments=20001
             )
             if docs['Count'] > 0:
                 item = docs['Items'][0]
-                url = item['url']
-                url = url.replace("my-dear-cold-blooded-king", "huyet-de-bao-chua")
-                url = url.replace("man-up-girl", "cung-len-nao-chang-trai")
-                url = url.replace("medical-return", "bac-si-trung-sinh")
-                url = url.replace("gleipnir", "soi-xich-than")
-                url = url.replace("nettruyen.com/truyen-tranh/dia-nguc-cuc-lac", "nhattruyen.com/truyen-tranh/dia-nguc-cuc-lac")
-                url = url.replace("ouroboros", "cong-ly-va-bong-toi")
-                url = url.replace("so-tay-nuoi-dung-than-tuong-len-duong-thoi", "so-tay-nuoi-duong-than-tuong-len-duong-thoi")
-                url = url.replace("shiyakusho", "van-phong-cong-chung-sau-khi-chet")
-                url = url.replace("watashi-ga-motete-dousunda", "sieu-cap-hu-nu")
-                url = url.replace("nettruyen.com/truyen-tranh/asadora", "nhattruyen.com/truyen-tranh/asadora")
-                url = url.replace("nettruyen.com/truyen-tranh/my-pre-wedding", "truyenchon.com/truyen/my-pre-wedding")
-                url = url.replace("nhattruyen.com/truyen-tranh/my-pre-wedding", "truyenchon.com/truyen/my-pre-wedding")
-                url = url.replace("act-age", "nu-dien-vien-tai-nang")
-                url = url.replace("uzaki-chan-wa-asobitai", "uzaki-chan-muon-di-choi")
-                url = url.replace("nettruyen.com/truyen-tranh/children-of-the-whales", "nhattruyen.com/truyen-tranh/children-of-the-whales")
-                url = url.replace("the-fable", "sat-thu-truyen-thuyet")
-                url = url.replace("the-honor-student-of-magic-high-school", "truong-trung-hoc-phap-thuat")
-                url = url.replace("su-ngay-tho-toi-loi", "ngay-tho-toi-loi")
-                url = url.replace("nhattruyen.com/truyen-tranh/heavenly-match", "truyenchon.com/truyen/heavenly-match")
+                resp = requests.head(item['url'])
+                if resp.status_code == 404:
+                    lines = self.logFile.readlines()
+                    lines.append("ERROR" + item['url'] + "\n")
+                    self.logFile.writelines(lines)
 
-                item['url'] = url
-                return item
+                    self.chapters.delete_item(
+                        Key = {
+                            "id": item['id']
+                        }
+                    )
+                else:
+                    return item
             elif self.segment < 20000:
                 self.segment = self.segment + 1
             else:
