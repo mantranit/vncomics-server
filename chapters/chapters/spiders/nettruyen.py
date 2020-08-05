@@ -17,7 +17,7 @@ class NettruyenSpider(scrapy.Spider):
     chapters = dynamodb.Table('chapters')
 
     logFile = open("crawled.log","a+")
-    segment = 0
+    segment = 6279
 
     def get_url(self):
         while True:
@@ -74,10 +74,10 @@ class NettruyenSpider(scrapy.Spider):
 
         yield obj
         
-        time.sleep(1)
         self.item = self.get_url()
         if self.item:
             print('----------'+str(self.segment)+'-----------' + self.item['url'] + '----------------')
+            time.sleep(1)
             yield scrapy.Request(url=self.item['url'], callback=self.parse)
         
         pass
