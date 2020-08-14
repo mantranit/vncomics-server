@@ -17,7 +17,7 @@ class NettruyenSpider(scrapy.Spider):
     chapters = dynamodb.Table('chapters')
 
     logFile = open("crawled.log","a+")
-    segment = 10915
+    segment = 11640
 
     def get_url(self):
         while True:
@@ -39,6 +39,7 @@ class NettruyenSpider(scrapy.Spider):
                             "id": item['id']
                         }
                     )
+                    time.sleep(0.5)
 
                 # if resp.status_code == 301:
                 #     lines = self.logFile.readlines()
@@ -50,6 +51,7 @@ class NettruyenSpider(scrapy.Spider):
                 #             "id": item['id']
                 #         }
                 #     )
+                #     time.sleep(0.5)
                     
                 else:
                     return item
