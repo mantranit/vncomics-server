@@ -17,7 +17,7 @@ class NettruyenSpider(scrapy.Spider):
     chapters = dynamodb.Table('chapters')
 
     logFile = open("crawled.log","a+")
-    segment = 13667
+    segment = 13781
 
     def get_url(self):
         while True:
